@@ -1,9 +1,7 @@
-import 'package:flutter/foundation.dart';
-
 class Country {
   final String commonName;
   final String officialName;
-  final String flagEmoji;
+  final String flagImageUrl;
   final String region;
   final String subregion;
   final String capital;
@@ -13,12 +11,11 @@ class Country {
   final List<String> languages;
   final List<String> timezones;
   final String alpha3Code;
-  final String flagImageUrl;
 
   const Country({
     required this.commonName,
     required this.officialName,
-    required this.flagEmoji,
+    required this.flagImageUrl,
     required this.region,
     required this.subregion,
     required this.capital,
@@ -28,38 +25,29 @@ class Country {
     required this.languages,
     required this.timezones,
     required this.alpha3Code,
-    required this.flagImageUrl,
   });
 
   factory Country.fromJson(Map<String, dynamic> json) {
-    // Parse currencies — dynamic key map
     final currenciesMap = json['currencies'] as Map<String, dynamic>?;
-    final currencies = currenciesMap?.entries
-            .map((e) {
-              final data = e.value as Map<String, dynamic>?;
-              final name = data?['name'] as String? ?? '';
-              final symbol = data?['symbol'] as String? ?? '';
-              return '$name ($symbol)';
-            })
-            .toList() ??
+    final currencies = currenciesMap?.entries.map((e) {
+          final data = e.value as Map<String, dynamic>?;
+          final name = data?['name'] as String? ?? '';
+          final symbol = data?['symbol'] as String? ?? '';
+          return '$name ($symbol)';
+        }).toList() ??
         [];
 
-    // Parse languages — dynamic key map
     final languagesMap = json['languages'] as Map<String, dynamic>?;
     final languages =
         languagesMap?.values.map((v) => v as String).toList() ?? [];
 
-    // Parse capital
     final capitalList = json['capital'] as List<dynamic>?;
-    final capital =
-        capitalList != null && capitalList.isNotEmpty
-            ? capitalList.first as String
-            : 'N/A';
+    final capital = capitalList != null && capitalList.isNotEmpty
+        ? capitalList.first as String
+        : 'N/A';
 
-    // Parse timezones
     final timezoneList = json['timezones'] as List<dynamic>?;
-    final timezones =
-        timezoneList?.map((t) => t as String).toList() ?? [];
+    final timezones = timezoneList?.map((t) => t as String).toList() ?? [];
 
     return Country(
       commonName:
@@ -68,8 +56,6 @@ class Country {
       officialName:
           (json['name'] as Map<String, dynamic>?)?['official'] as String? ??
               'Unknown',
-      flagEmoji:
-          (json['flags'] as Map<String, dynamic>?)?['png'] as String? ?? '',
       flagImageUrl:
           (json['flags'] as Map<String, dynamic>?)?['png'] as String? ?? '',
       region: json['region'] as String? ?? 'Unknown',
@@ -101,7 +87,7 @@ class Country {
   Country copyWith({
     String? commonName,
     String? officialName,
-    String? flagEmoji,
+    String? flagImageUrl,
     String? region,
     String? subregion,
     String? capital,
@@ -111,12 +97,11 @@ class Country {
     List<String>? languages,
     List<String>? timezones,
     String? alpha3Code,
-    String? flagImageUrl,
   }) {
     return Country(
       commonName: commonName ?? this.commonName,
       officialName: officialName ?? this.officialName,
-      flagEmoji: flagEmoji ?? this.flagEmoji,
+      flagImageUrl: flagImageUrl ?? this.flagImageUrl,
       region: region ?? this.region,
       subregion: subregion ?? this.subregion,
       capital: capital ?? this.capital,
@@ -126,7 +111,6 @@ class Country {
       languages: languages ?? this.languages,
       timezones: timezones ?? this.timezones,
       alpha3Code: alpha3Code ?? this.alpha3Code,
-      flagImageUrl: flagImageUrl ?? this.flagImageUrl,
     );
   }
 }
