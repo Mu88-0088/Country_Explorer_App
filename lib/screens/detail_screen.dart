@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../models/country.dart';
 import '../services/country_api_service.dart';
 import '../services/api_exception.dart';
@@ -49,12 +48,9 @@ class _DetailScreenState extends State<DetailScreen> {
       body: FutureBuilder<Country>(
         future: _countryFuture,
         builder: (context, snapshot) {
-          // State 1: Loading
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-
-          // State 2: Error
           if (snapshot.hasError) {
             return Center(
               child: Padding(
@@ -79,41 +75,29 @@ class _DetailScreenState extends State<DetailScreen> {
               ),
             );
           }
-
-          // State 3: No data
           if (!snapshot.hasData) {
             return const Center(child: Text('Country data not available.'));
           }
-
-          // State 4: Data
           final country = snapshot.data!;
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Flag image
                 Center(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: CachedNetworkImage(
-                      imageUrl: country.flagImageUrl,
+                    child: Image.network(
+                      country.flagImageUrl,
                       width: 200,
                       height: 120,
                       fit: BoxFit.cover,
-                      placeholder: (_, __) => const SizedBox(
-                        width: 200,
-                        height: 120,
-                        child: CircularProgressIndicator(),
-                      ),
-                      errorWidget: (_, __, ___) =>
+                      errorBuilder: (_, __, ___) =>
                           const Icon(Icons.flag, size: 80),
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // Country name
                 Center(
                   child: Text(
                     country.commonName,
@@ -125,16 +109,15 @@ class _DetailScreenState extends State<DetailScreen> {
                 Center(
                   child: Text(
                     country.officialName,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey,
-                        ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
                 ),
-
                 const SizedBox(height: 24),
                 const Divider(),
-
                 _infoRow('Region', country.region),
                 _infoRow('Subregion', country.subregion),
                 _infoRow('Capital', country.capital),
