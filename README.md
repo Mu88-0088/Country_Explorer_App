@@ -1,8 +1,8 @@
 # Country Explorer App
 
 ## 1. Student Information
-- **Name:** [Your Full Name]
-- **Student ID:** [Your Student ID]
+- **Name:** Musab Ashik
+- **Student ID:** ATE/0319/15
 
 ## 2. Track
 Track A — Country Explorer App (API: RestCountries)
@@ -16,12 +16,12 @@ every country.
 
 ## 4. How to Run the App Locally
 1. Clone the repository:
-   git clone https://github.com/[your-username]/flutter-country-explorer.git
-2. Navigate to the project folder:
-   cd flutter-country-explorer
-3. Install dependencies:
+   git clone https://github.com/Mu88-0088/Country_Explorer_App.git
+3. Navigate to the project folder:
+   cd Country_Explorer_App
+4. Install dependencies:
    flutter pub get
-4. Run the app:
+5. Run the app:
    flutter run
 
 No API key or .env file is required. The RestCountries API is completely free.
