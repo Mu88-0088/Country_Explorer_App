@@ -13,7 +13,6 @@ class CountryApiService {
     'Accept': 'application/json',
   };
 
-  // Cache layer (bonus)
   List<Country>? _cachedCountries;
   DateTime? _cacheTime;
   final Duration _cacheTTL = const Duration(minutes: 5);
@@ -35,34 +34,23 @@ class CountryApiService {
   }
 
   Future<List<Country>> fetchAllCountries() async {
-    // Return cache if valid (bonus)
     if (_isCacheValid) return _cachedCountries!;
-
     try {
       final uri = Uri.https(
         _baseUrl,
         '/v3.1/all',
         {'fields': 'name,flags,region,subregion,population,capital,cca3'},
       );
-
-      final response = await http
-          .get(uri, headers: _headers)
-          .timeout(_timeout);
-
+      final response =
+          await http.get(uri, headers: _headers).timeout(_timeout);
       _checkResponse(response);
-
       final List<dynamic> jsonList = jsonDecode(response.body) as List<dynamic>;
       final countries = jsonList
           .map((json) => Country.fromJson(json as Map<String, dynamic>))
           .toList();
-
-      // Sort alphabetically
       countries.sort((a, b) => a.commonName.compareTo(b.commonName));
-
-      // Store cache (bonus)
       _cachedCountries = countries;
       _cacheTime = DateTime.now();
-
       return countries;
     } on SocketException {
       throw const SocketException('No internet connection');
@@ -70,21 +58,19 @@ class CountryApiService {
       throw TimeoutException('Request timed out. Please try again.');
     } on FormatException {
       throw const FormatException('Unexpected data format received');
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw Exception('An unexpected error occurred: ${e.toString()}');
     }
   }
 
   Future<List<Country>> searchByName(String name) async {
     try {
       final uri = Uri.https(_baseUrl, '/v3.1/name/$name');
-
-      final response = await http
-          .get(uri, headers: _headers)
-          .timeout(_timeout);
-
+      final response =
+          await http.get(uri, headers: _headers).timeout(_timeout);
       if (response.statusCode == 404) return [];
-
       _checkResponse(response);
-
       final List<dynamic> jsonList = jsonDecode(response.body) as List<dynamic>;
       return jsonList
           .map((json) => Country.fromJson(json as Map<String, dynamic>))
@@ -95,19 +81,18 @@ class CountryApiService {
       throw TimeoutException('Request timed out. Please try again.');
     } on FormatException {
       throw const FormatException('Unexpected data format received');
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw Exception('An unexpected error occurred: ${e.toString()}');
     }
   }
 
   Future<Country> fetchByCode(String code) async {
     try {
       final uri = Uri.https(_baseUrl, '/v3.1/alpha/$code');
-
-      final response = await http
-          .get(uri, headers: _headers)
-          .timeout(_timeout);
-
+      final response =
+          await http.get(uri, headers: _headers).timeout(_timeout);
       _checkResponse(response);
-
       final List<dynamic> jsonList = jsonDecode(response.body) as List<dynamic>;
       return Country.fromJson(jsonList.first as Map<String, dynamic>);
     } on SocketException {
@@ -116,6 +101,9 @@ class CountryApiService {
       throw TimeoutException('Request timed out. Please try again.');
     } on FormatException {
       throw const FormatException('Unexpected data format received');
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw Exception('An unexpected error occurred: ${e.toString()}');
     }
   }
 }
