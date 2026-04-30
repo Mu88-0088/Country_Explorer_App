@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../models/country.dart';
 import '../services/country_api_service.dart';
 import '../services/api_exception.dart';
@@ -31,24 +30,21 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  // Debounce — 400ms delay (bonus)
   void _onSearchChanged(String query) {
     _debounceTimer?.cancel();
-
     if (query.trim().isEmpty) {
       setState(() {
         _results = [];
         _hasSearched = false;
         _errorMessage = null;
+        _isLoading = false;
       });
       return;
     }
-
+    setState(() => _isLoading = true);
     _debounceTimer = Timer(const Duration(milliseconds: 400), () {
       _performSearch(query.trim());
     });
-
-    setState(() => _isLoading = true);
   }
 
   Future<void> _performSearch(String query) async {
@@ -58,7 +54,6 @@ class _SearchScreenState extends State<SearchScreen> {
       _errorMessage = null;
       _hasSearched = true;
     });
-
     try {
       final results = await _apiService.searchByName(query);
       if (!mounted) return;
@@ -165,17 +160,12 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
       );
     }
-
     if (!_hasSearched) {
-      return const Center(
-        child: Text('Type a country name to search'),
-      );
+      return const Center(child: Text('Type a country name to search'));
     }
-
     if (!_isLoading && _results.isEmpty) {
       return const Center(child: Text('No countries found.'));
     }
-
     return ListView.builder(
       itemCount: _results.length,
       itemBuilder: (context, index) {
@@ -183,13 +173,12 @@ class _SearchScreenState extends State<SearchScreen> {
         return ListTile(
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(4),
-            child: CachedNetworkImage(
-              imageUrl: country.flagImageUrl,
+            child: Image.network(
+              country.flagImageUrl,
               width: 48,
               height: 32,
               fit: BoxFit.cover,
-              placeholder: (_, __) => const SizedBox(width: 48, height: 32),
-              errorWidget: (_, __, ___) => const Icon(Icons.flag, size: 32),
+              errorBuilder: (_, __, ___) => const Icon(Icons.flag, size: 32),
             ),
           ),
           title: Text(country.commonName),
