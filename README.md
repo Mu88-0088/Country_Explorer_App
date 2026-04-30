@@ -23,7 +23,13 @@ every country.
    flutter pub get
 5. Run the app:
    flutter run
-
+Alternatively:
+1. Clone the repository:
+   git clone https://github.com/Mu88-0088/Country_Explorer_App.git
+2. Open FlutLab.io in your browser
+3. Click "Open Project" and import from GitHub
+4. Click the Run button in FlutLab
+   
 No API key or .env file is required. The RestCountries API is completely free.
 
 ## 5. API Endpoints Used
